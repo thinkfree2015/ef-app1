@@ -116,6 +116,7 @@ public class ArtUserFollowedController extends BaseController {
                             } else {
                                 followUserUtil.setMaster(null);
                             }
+                            followUserUtil.setFlag("1");
                             followUserUtils.add(followUserUtil);
                         } else if (type.equals("2")) {
                             List<UserBrief> userBrief = (List<UserBrief>) baseManager.listObject(AppConfig.SQL_GET_USER_SIGNER, paramMap);
@@ -125,6 +126,7 @@ public class ArtUserFollowedController extends BaseController {
                             } else {
                                 followUserUtil.setUserBrief(new UserBrief());
                             }
+                            followUserUtil.setFlag("1");
                             followUserUtils.add(followUserUtil);
                         }
 
@@ -161,7 +163,7 @@ public class ArtUserFollowedController extends BaseController {
                         String is_followed = "2";
                         ArtUserFollowed followed = null;
                         List<ArtUserFollowed> artUserFollowedList = (List<ArtUserFollowed>) baseManager.listObject(AppConfig.SQL_GET_IS_FOLLOWED, paramMap);
-                        if (artUserFollowedList!=null)
+                        if (artUserFollowedList!=null && artUserFollowedList.size()!=0)
                             followed = artUserFollowedList.get(0);
                         if (followed != null && followed.getId() != null) {
                             is_followed = "1";
@@ -279,7 +281,9 @@ public class ArtUserFollowedController extends BaseController {
                             } else {
                                 followUserUtil.setMaster(null);
                             }
+                            followUserUtil.setFlag("1");
                             followUserUtils.add(followUserUtil);
+
                         } else if (type.equals("2")) {
                             List<UserBrief> userBrief = (List<UserBrief>) baseManager.listObject(AppConfig.SQL_GET_USER_SIGNER, paramMap);
                             followUserUtil.setArtUserFollowed(artUserFollowed);
@@ -288,6 +292,7 @@ public class ArtUserFollowedController extends BaseController {
                             } else {
                                 followUserUtil.setUserBrief(new UserBrief());
                             }
+                            followUserUtil.setFlag("1");
                             followUserUtils.add(followUserUtil);
                         }
 
@@ -300,12 +305,12 @@ public class ArtUserFollowedController extends BaseController {
                 resultMap.put("pageInfoList", followUserUtils);
             } else if ("2".equals(flag)) {//自己查看别人
 
-                XQuery query = new XQuery("listArtUserFollowed_num", request);
+                XQuery query = new XQuery("listArtUserFollowed_fan", request);
                 query.put("follower_id", otherUserId);
                 query.put("user_type", type);
                 List<ArtUserFollowed> userFollowedList = baseManager.listObject(query);
 
-                XQuery xQuery = new XQuery("plistArtUserFollowed_default", request);
+                XQuery xQuery = new XQuery("plistArtUserFollowed_default1", request);
                 xQuery.put("follower_id", otherUserId);
                 xQuery.put("user_type", type);
                 PageEntity entity = new PageEntity();
@@ -324,7 +329,7 @@ public class ArtUserFollowedController extends BaseController {
                         String is_followed = "2";
                         ArtUserFollowed followed = null;
                         List<ArtUserFollowed> artUserFollowedList = (List<ArtUserFollowed>) baseManager.listObject(AppConfig.SQL_GET_IS_FOLLOWED, paramMap);
-                        if (artUserFollowedList!=null)
+                        if (artUserFollowedList!=null && artUserFollowedList.size()!=0)
                             followed = artUserFollowedList.get(0);
                         if (followed != null && followed.getId() != null) {
                             is_followed = "1";
@@ -429,14 +434,14 @@ public class ArtUserFollowedController extends BaseController {
                     userFollowed.setStatus("1");
                     baseManager.saveOrUpdate(ArtUserFollowed.class.getName(), userFollowed);
                     resultMap = resultMapHandler.handlerResult("0", "请求成功", logBean);
-                    resultMap.put("status","1");
+                    resultMap.put("flag","1");
                     resultMap.put("artUserFollowed", userFollowed);
                 } else if ("1".equals(jsonObj.getString("identifier"))) {
                     userFollowed.setStatus("0");
                     baseManager.saveOrUpdate(ArtUserFollowed.class.getName(), userFollowed);
                     resultMap = resultMapHandler.handlerResult("0", "请求成功", logBean);
                     resultMap.put("artUserFollowed", userFollowed);
-                    resultMap.put("status","0");
+                    resultMap.put("flag","2");
                 }
             } else {
                 return resultMapHandler.handlerResult("10001", "必选参数为空，请仔细检查", logBean);
